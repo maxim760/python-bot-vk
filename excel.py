@@ -1,6 +1,5 @@
 from functools import reduce
 import re
-from types import resolve_bases
 from consts import BTN_TEXTS, DAYS_ON_WEEK_UPPER, MONTHS
 from utils import get_current_week, join_lines, get_start_week, get_date_day_month, to_n_items
 import xlrd

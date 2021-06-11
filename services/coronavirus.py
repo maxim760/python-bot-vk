@@ -53,7 +53,9 @@ def get_day_info(row, soup, item):
   time_text = get_time_text(soup)
   types = get_types(soup)
   result = []
+  print(row, "get_da_info row")
   items = row.find_all(item["tag"], class_=item["class"]) if "class" in item else row.find_all(item["tag"]) 
+  print(items, "get_da_info items")
   for i in range(len(items)):
     string = f"{types[i]}: {items[i].contents[0]} ("
     diff = items[i].contents[1]
@@ -63,6 +65,7 @@ def get_day_info(row, soup, item):
     else:
       result.insert(0, string)
   result.insert(0, time_text)
+  print(result, "get_da_info")
   return join_lines(result)
 
 def get_city_info(row):
@@ -87,12 +90,15 @@ def get_city_info(row):
   return result
 
 def get_stat_last_10_days():
+  print("start")
   soup = get_soup()
   time = get_time_text(soup=soup)
   types = get_types(soup=soup)
-  day_number = re.compile("\d+").findall(time)[0]
+  day_number_from_page = re.compile("\d+").findall(time)[0]
+  day_number = day_number_from_page if int(day_number_from_page) >= 10 else "0" + day_number_from_page
   types =get_types(soup=soup)
   stats = get_stat_rows(soup=soup)
+  print("start6")
   result = { 
     "current_day_stat": None,
     "died": [],
@@ -106,7 +112,9 @@ def get_stat_last_10_days():
     if(tries == 10):
       break
     result["dates"].insert(0, stat.find("th").getText())
+    print(stat.find("th").getText(), "titmemem")
     if(not is_added and stat.find("th").getText().split(".")[0] == day_number):
+      print("kek")
       is_added = True
       result["current_day_stat"] = get_day_info(soup=soup, row=stat, item={"tag": "td"}) 
     for i, td in enumerate(stat.find_all("td")):
@@ -127,6 +135,7 @@ def get_stat_last_10_days():
     died=result["died"],
     save=result["save"],
   )
+  print(result)
   return {"img": result["img"], "stat": result["current_day_stat"]}
 
 def get_stat_by_query(query):

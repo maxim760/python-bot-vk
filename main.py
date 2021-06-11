@@ -1,11 +1,8 @@
 import vk_api
-import requests
 import json
-from types import SimpleNamespace
 import re
 import vk_api
 from vk_api import VkUpload
-from vk_api import keyboard
 from vk_api.longpoll import VkLongPoll, VkEventType
 from vk_api.utils import get_random_id
 from vk_api.keyboard import VkKeyboard, VkKeyboardColor
@@ -17,7 +14,6 @@ from services.coronavirus import get_stat_last_10_days, get_stat_by_query
 from excel import get_schedule_day, get_schedule_week,get_schedule_full_day, find_teachers,get_teacher_day,get_teacher_week
 from utils import get_current_week, join_photos, is_group, to_photo_attachment
 from consts import FORMAT_GROUP, BTN_TEXTS, UNKNOWN, DAYS_ON_WEEK_UPPER
-
 def get_bot_instruction():
   return """С помощью бота вы можете получать:
     ⚡ Расписание учебной группы и преподавателей
@@ -104,11 +100,6 @@ def main():
   vk = vk_session.get_api()
   VkKeyboard(one_time=True).add_button("старт", color=VkKeyboardColor.SECONDARY)
   longpoll = VkLongPoll(vk_session)
-  # upload = VkUpload(vk_session)
-  # attachments = []
-  # image = requests.get("URL", stream=True)
-  # photo = upload.photo_messages(photo = image.raw())[0]
-  # attachments.append("photo{}_{}".format(photo["owner_id"], photo["id"]))
   
   for event in longpoll.listen():
     if event.type == VkEventType.MESSAGE_NEW and event.text and event.to_me:
@@ -125,6 +116,7 @@ def main():
       user_group = users.get(user_id)
       
       is_not_user = not user_group
+      # получаю информацию нажатой кнопке
       payload_from_msg = event.extra_values.get("payload")
       payload = json.loads(payload_from_msg) if payload_from_msg else None
       category, payload_dop_info = payload if (payload and type(payload) != dict) else (None, None)
@@ -265,6 +257,7 @@ def main():
       elif(text.startswith("корона")):
         if(text == "корона"):
           res = get_stat_last_10_days()
+          print(res)
           send_message(message=res["stat"], keyboard=VkKeyboard.get_empty_keyboard())
           send_message(attachment=get_attachment(picture=res["img"]))
         else:

@@ -22,6 +22,7 @@ default_params = {
 
 def get_result(url, params):
   response = requests.get(url + params)
+  print(url + params)
   result = response.json()
   return result
 
@@ -176,4 +177,3 @@ def get_weather_5_days():
     "icons": icons, 
     "temps": join_lines(temps),
   }
-
